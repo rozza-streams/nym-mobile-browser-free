@@ -1,6 +1,6 @@
 # NYM Browser iOS starter
 
-A small native iPhone browser shell using Apple's WebKit. It opens the NYM game hub and includes address/search, back, forward, home, refresh, page progress and page title controls. WebKit uses its normal persistent website store, so a login may remain between launches.
+A small native iPhone browser using Apple's WebKit. It opens the NYM game hub and includes address/search, back, forward, home, refresh, page progress and page title controls. Its **NYM status** sheet reads visible resource and activity-timer text from the current game page. WebKit uses its normal persistent website store, so a login may remain between launches.
 
 ## Free build
 
@@ -16,7 +16,8 @@ An unsigned IPA cannot be installed directly. iOS requires signing and provision
 
 ## Scope
 
-- This is only a browser shell. It does **not** include or run the NYM Optimiser Chrome extension.
+- The status sheet is read-only. It does not submit game actions, change settings, handle verification, or bypass game checks.
+- It does **not** include or run the NYM Optimiser Chrome extension. Chrome extensions cannot be transferred directly into this iPhone app; their functionality would need a separate iOS implementation.
 - It does not require a paid model, API key or cloud service.
 - It does not bypass game checks or complete verification.
 - iOS may suspend apps in the background, so continuous background timers/actions are not promised.
