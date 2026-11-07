@@ -1,0 +1,48 @@
+name: Build unsigned iOS app
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Unpack iOS project
+        run: |
+          mkdir -p "$RUNNER_TEMP/source"
+          unzip -q NYMMobileBrowser-source.zip -d "$RUNNER_TEMP/source"
+
+      - name: Build for iPhone without signing
+        run: |
+          xcodebuild \
+            -project "$RUNNER_TEMP/source/NYMMobileBrowser.xcodeproj" \
+            -scheme NYMMobileBrowser \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Package unsigned IPA
+        run: |
+          APP_PATH="$RUNNER_TEMP/DerivedData/Build/Products/Release-iphoneos/NYMMobileBrowser.app"
+          test -d "$APP_PATH"
+          mkdir -p "$RUNNER_TEMP/ipa/Payload"
+          ditto "$APP_PATH" "$RUNNER_TEMP/ipa/Payload/NYMMobileBrowser.app"
+          cd "$RUNNER_TEMP/ipa"
+          ditto -c -k --sequesterRsrc --keepParent Payload "$RUNNER_TEMP/NYMMobileBrowser-unsigned.ipa"
+
+      - name: Save IPA for download
+        uses: actions/upload-artifact@v4
+        with:
+          name: NYMMobileBrowser-unsigned-ipa
+          path: ${{ runner.temp }}/NYMMobileBrowser-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 7
